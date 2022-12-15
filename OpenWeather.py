@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+#need to execute below to get requests module
+#pip install requests
+
 import json,requests
 from pprint import pprint
 

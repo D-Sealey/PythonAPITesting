@@ -37,7 +37,9 @@ def get_geo_loc(city :str ,state=''):
             'appid':api_key
         }
 
+    #--this is the important API part--
     geocode=requests.get(geo_url,geo_payload)
+
     # pprint(geo_payload)
     # pprint(geocode.json())
 
@@ -54,7 +56,10 @@ def get_cur_weather(lat:float,lon:float):
         'units':'imperial',
         'appid':api_key
     }
+
+    #--this is the important API part--
     current_weather=requests.get(url,params)
+    
     # pprint(current_weather.json())
 
     return current_weather.json()

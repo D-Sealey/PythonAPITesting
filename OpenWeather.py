@@ -20,13 +20,19 @@ http://api.openweathermap.org/geo/1.0/zip?zip={zip code},{country code}&appid={A
 url='https://api.openweathermap.org/data/2.5/weather'
 api_key='1c3cc2b116ecaa10232bfc058c368971'
 
-def get_geo_loc(city :str ,state : str):
+def get_geo_loc(city :str ,state=''):
     geo_url='http://api.openweathermap.org/geo/1.0/direct'
 
-    geo_payload={
-        'q':f'{city}, {state}',
-        'appid':api_key
-    }
+    if state:
+        geo_payload={
+            'q':f'{city}, {state}',
+            'appid':api_key
+        }
+    else:
+        geo_payload={
+            'q':f'{city}',
+            'appid':api_key
+        }
 
     geocode=requests.get(geo_url,geo_payload)
     # pprint(geo_payload)
@@ -50,7 +56,7 @@ def get_cur_weather(lat:float,lon:float):
 
     return current_weather.json()
 
-def feels_like(city,state):
+def feels_like(city,state=''):
     lat,lon=get_geo_loc(city,state)
     weather=get_cur_weather(lat,lon)
 
@@ -67,6 +73,9 @@ city='Oklahoma City'
 state='Oklahoma'
 feels_like(city,state)
 
-lat,lon=get_geo_loc(city,state)
+city='Tokyo'
+feels_like(city)
+
+lat,lon=get_geo_loc(city)
 weather=get_cur_weather(lat,lon)
-#pprint(weather)
+pprint(weather)

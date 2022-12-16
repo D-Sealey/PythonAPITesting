@@ -23,7 +23,7 @@ http://api.openweathermap.org/geo/1.0/zip?zip={zip code},{country code}&appid={A
 url='https://api.openweathermap.org/data/2.5/weather'
 api_key='1c3cc2b116ecaa10232bfc058c368971'
 
-def get_geo_loc(city :str ,state=''):
+def get_geo_loc(city :str ,state :str =''):
     geo_url='http://api.openweathermap.org/geo/1.0/direct'
 
     if state:
@@ -44,9 +44,10 @@ def get_geo_loc(city :str ,state=''):
     # pprint(geocode.json())
 
     # print(f"Name: {geocode.json()[0]['name']}")
-    print(f"Lat: {(lat:=geocode.json()[0]['lat'])}")
-    print(f"Lon: {(lon:=geocode.json()[0]['lon'])}")
-
+    lat=geocode.json()[0]['lat']
+    # print(f"Lat: {lat}")
+    lon=geocode.json()[0]['lon']
+    # print(f"Lon: {lon}")
     return lat,lon
 
 def get_cur_weather(lat:float,lon:float):
@@ -64,7 +65,7 @@ def get_cur_weather(lat:float,lon:float):
 
     return current_weather.json()
 
-def feels_like(city,state=''):
+def feels_like(city :str,state :str =''):
     lat,lon=get_geo_loc(city,state)
     weather=get_cur_weather(lat,lon)
 
@@ -74,16 +75,33 @@ def feels_like(city,state=''):
 
 city='Saskatoon'
 state='Saskatchewan'
-feels_like(city,state)
+# feels_like(city,state)
 print()
 
 city='Oklahoma City'
 state='Oklahoma'
-feels_like(city,state)
+# feels_like(city,state)
 
 city='Tokyo'
 feels_like(city)
 
 lat,lon=get_geo_loc(city)
 weather=get_cur_weather(lat,lon)
+# pprint(weather)
+
+city='Saskatoon'
+lat,lon=get_geo_loc(city)
+weather=get_cur_weather(lat,lon)
 pprint(weather)
+
+class City:
+    def __init__(self,name):
+        self.name=name
+        self.lat,self.lon=get_geo_loc(name)
+        ...
+    def get_weather(self):
+        ...
+    ...
+
+Tokyo=City('Tokyo')
+print(Tokyo.name,Tokyo.lat)

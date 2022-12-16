@@ -45,9 +45,9 @@ def get_geo_loc(city :str ,state :str =''):
 
     # print(f"Name: {geocode.json()[0]['name']}")
     lat=geocode.json()[0]['lat']
-    # print(f"Lat: {lat}")
+    # print(f"Lat: {(lat:=geocode.json()[0]['lat'])}")
     lon=geocode.json()[0]['lon']
-    # print(f"Lon: {lon}")
+    # print(f"Lon: {(lon:=geocode.json()[0]['lon'])}")
     return lat,lon
 
 def get_cur_weather(lat:float,lon:float):
@@ -76,14 +76,13 @@ def feels_like(city :str,state :str =''):
 city='Saskatoon'
 state='Saskatchewan'
 # feels_like(city,state)
-print()
 
 city='Oklahoma City'
 state='Oklahoma'
 # feels_like(city,state)
 
 city='Tokyo'
-feels_like(city)
+# feels_like(city)
 
 lat,lon=get_geo_loc(city)
 weather=get_cur_weather(lat,lon)
@@ -92,16 +91,45 @@ weather=get_cur_weather(lat,lon)
 city='Saskatoon'
 lat,lon=get_geo_loc(city)
 weather=get_cur_weather(lat,lon)
-pprint(weather)
+# pprint(weather)
 
 class City:
-    def __init__(self,name):
+    def __init__(self,name,lat=None,lon=None):
         self.name=name
-        self.lat,self.lon=get_geo_loc(name)
+        if lat and lon:
+            self.lat=lat
+            self.lon=lon
+        else:
+            self.lat,self.lon=get_geo_loc(name)
         ...
     def get_weather(self):
+        self.weather=get_cur_weather(self.lat,self.lon)
+        return self.weather
         ...
+    def temp(self):
+        feels=self.get_weather()['main']['feels_like']
+        print(f'{self.name}')
+        print(f'Feels like: {feels} F')
     ...
 
 Tokyo=City('Tokyo')
-print(Tokyo.name,Tokyo.lat)
+pprint(Tokyo.get_weather())
+
+OKC=City('Oklahoma City')
+OKC.temp()
+
+#---TESTING---
+geo_url='http://api.openweathermap.org/geo/1.0/direct'
+
+city='London'
+geo_payload={
+    'q':f'{city}',
+    'appid':api_key,
+    'limit':3 #defaults to 1 if limit not specified
+}
+
+#--this is the important API part--
+geocode=requests.get(geo_url,geo_payload)
+
+# pprint(geo_payload)
+# pprint(geocode.json())

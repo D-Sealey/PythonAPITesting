@@ -38,21 +38,22 @@ def get_geo_loc(city :str ,state :str =''):
             'appid':api_key
         }
 
-    #--this is the important API part--
+    #--this is the API call--
     geocode=requests.get(geo_url,geo_payload)
 
-    # pprint(geo_payload)
-    # pprint(geocode.json())
-
-    # print(f"Name: {geocode.json()[0]['name']}")
-    lat=geocode.json()[0]['lat']
-    # print(f"Lat: {(lat:=geocode.json()[0]['lat'])}")
-    lon=geocode.json()[0]['lon']
-    # print(f"Lon: {(lon:=geocode.json()[0]['lon'])}")
+    if geocode.json():
+        lat=geocode.json()[0]['lat']
+        # print(f"Lat: {(lat:=geocode.json()[0]['lat'])}")
+        lon=geocode.json()[0]['lon']
+        # print(f"Lon: {(lon:=geocode.json()[0]['lon'])}")
+    else:
+        print(f'Cannot find city {city}.')
+        lat,lon=None,None
     return lat,lon
 
 def get_cur_weather(lat:float,lon:float):
     '''Returns weather data from provided lat and lon'''
+    url='https://api.openweathermap.org/data/2.5/weather'
     params={
         'lat':lat,
         'lon':lon,
@@ -60,41 +61,13 @@ def get_cur_weather(lat:float,lon:float):
         'appid':api_key
     }
 
-    #--this is the important API part--
+    #--this is the API call--
     current_weather=requests.get(url,params)
-    
-    # pprint(current_weather.json())
+    '''equivalent to
+    https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=imperial&appid={api_key}
+    '''
 
     return current_weather.json()
-
-def feels_like(city :str,state :str =''):
-    '''Prints feels_like data from provided city'''
-    lat,lon=get_geo_loc(city,state)
-    weather=get_cur_weather(lat,lon)
-
-    print(f'Name: {city}, {state}')
-    feels=weather['main']['feels_like']
-    print(f'Feels like: {feels}')
-
-city='Saskatoon'
-state='Saskatchewan'
-# feels_like(city,state)
-
-city='Oklahoma City'
-state='Oklahoma'
-# feels_like(city,state)
-
-city='Tokyo'
-# feels_like(city)
-
-lat,lon=get_geo_loc(city)
-weather=get_cur_weather(lat,lon)
-# pprint(weather)
-
-city='Saskatoon'
-lat,lon=get_geo_loc(city)
-weather=get_cur_weather(lat,lon)
-# pprint(weather)
 
 class City:
     def __init__(self,name:str,lat:float=None,lon:float=None):
@@ -110,21 +83,44 @@ class City:
         return self.weather
         ...
     def temp(self):
+        if not (self.lat and self.lon):
+            print('Need a valid location.')
+            return None
+        temp=self.get_weather()['main']['temp']
         feels=self.get_weather()['main']['feels_like']
         print(f'{self.name}')
+        print(f'Temp is: {temp} F')
         print(f'Feels like: {feels} F')
     ...
 
+
 #---TESTING---
+city='London'
+lat,lon=get_geo_loc(city)
+weather=get_cur_weather(lat,lon)
+# pprint(weather)
+
+city='Saskatoon'
+lat,lon=get_geo_loc(city)
+weather=get_cur_weather(lat,lon)
+# pprint(weather)
+
+'''Class tests'''
 Tokyo=City('Tokyo')
 # pprint(Tokyo.get_weather())
 
+Sask=City('Saskatoon')
+Sask.temp()
+# pprint(Sask.get_weather())
+
 OKC=City('Oklahoma City')
-# OKC.temp()
+OKC.temp()
 
 OKC_test=City('OKC',35,-97)
+OKC_test=City('OKC')
 OKC_test.temp()
 
+'''Geocoding tests'''
 geo_url='http://api.openweathermap.org/geo/1.0/direct'
 
 city='London'

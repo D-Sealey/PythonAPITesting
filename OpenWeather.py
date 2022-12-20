@@ -86,11 +86,30 @@ class City:
         if not (self.lat and self.lon):
             print('Need a valid location.')
             return None
-        temp=self.get_weather()['main']['temp']
-        feels=self.get_weather()['main']['feels_like']
+        weather=self.get_weather()
+        temp=weather['main']['temp']
+        feels=weather['main']['feels_like']
         print(f'{self.name}')
         print(f'Temp is: {temp} F')
         print(f'Feels like: {feels} F')
+
+    def full_name(self):
+        '''Returns City, State, Country
+        http://api.openweathermap.org/geo/1.0/reverse?lat={lat}&lon={lon}&limit={limit}&appid={API key}
+        '''
+        url='http://api.openweathermap.org/geo/1.0/reverse'
+        params={
+            'lat':self.lat,
+            'lon':self.lon,
+            'appid':api_key
+        }
+        geocode=requests.get(url,params)
+        city_name=geocode.json()[0]['name']
+        state=geocode.json()[0]['state']
+        country=geocode.json()[0]['country']
+        print(f'{city_name}, {state}, {country}')
+        ...
+    
     ...
 
 
@@ -114,16 +133,17 @@ Sask.temp()
 # pprint(Sask.get_weather())
 
 OKC=City('Oklahoma City')
+OKC.full_name()
 OKC.temp()
 
 OKC_test=City('OKC',35,-97)
-OKC_test=City('OKC')
-OKC_test.temp()
+# OKC_test=City('OKC')
+# OKC_test.temp()
 
 '''Geocoding tests'''
 geo_url='http://api.openweathermap.org/geo/1.0/direct'
 
-city='London'
+city='Oklahoma City'
 geo_payload={
     'q':f'{city}',
     'appid':api_key,
@@ -135,3 +155,17 @@ geocode=requests.get(geo_url,geo_payload)
 
 # pprint(geo_payload)
 # pprint(geocode.json())
+# city_name=geocode.json()[0]['name']
+# state=geocode.json()[0]['state']
+# country=geocode.json()[0]['country']
+# print(f'{city_name}, {state}, {country}')
+
+lat,lon=get_geo_loc('Oklahoma City')
+url='http://api.openweathermap.org/geo/1.0/reverse'
+params={
+    'lat':lat,
+    'lon':lon,
+    'appid':api_key
+}
+info=requests.get(url,params).json()
+# pprint(info)
